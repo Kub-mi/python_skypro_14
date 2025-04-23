@@ -1,4 +1,5 @@
 from classes import Product, Category
+from utils import load_data_from_json
 
 if __name__ == "__main__":
     product1 = Product("Samsung Galaxy S23 Ultra", "256GB, Серый цвет, 200MP камера", 180000.0, 5)
@@ -42,3 +43,10 @@ if __name__ == "__main__":
 
     print(Category.category_count)
     print(Category.product_count)
+
+    categories = load_data_from_json("data/products.json")
+
+    for category in categories:
+        print(f"Категория: {category.name} — {len(category.products)} товаров")
+        for product in category.products:
+            print(f"  - {product.name}: {product.price} руб. ({product.quantity} шт.)")
