@@ -29,7 +29,7 @@ class Product:
         if new_price <= 0:
             print("Цена не должна быть нулевая или отрицательная")
         elif new_price < self.__price:
-            confirm = input(f"Вы действительно хотите понизить цену с {self._price} до {new_price}? (y/n): ")
+            confirm = input(f"Вы действительно хотите понизить цену с {self.__price} до {new_price}? (y/n): ")
             if confirm.lower() == 'y':
                 self.__price = new_price
             else:
@@ -39,12 +39,12 @@ class Product:
 
 
     @classmethod
-    def new_product_upgraded(cls, data: dict, existing_products: List["Product"] = None):
+    def new_product_upgrated(cls, data: dict, existing_products: List["Product"] = None):
         existing_products = existing_products or []
         for product in existing_products:
             if product.name == data["name"]:
                 product.quantity += data["quantity"]
-                product._price = max(product.price, data["price"])
+                product.__price = max(product.price, data["price"])
                 return product
             return cls(
                 name=data["name"],
