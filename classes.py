@@ -12,6 +12,12 @@ class Product:
         return f"{self.name}, {self.__price} руб. Остаток: {self.quantity} шт.\n"
 
 
+    def __add__(self, other):
+        if not isinstance(other, Product):
+            raise TypeError("Складывать можно только с другим продуктом")
+        return self.__price * self.quantity + other.__price * other.quantity
+
+
     @classmethod
     def new_product(cls, data: dict):
         return cls(
