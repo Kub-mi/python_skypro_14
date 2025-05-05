@@ -114,3 +114,23 @@ def test_price_setter_confirm_lower_price_no(monkeypatch, capfd):
 
     out, _ = capfd.readouterr()
     assert "Цена осталась прежней" in out
+
+
+def test_product_add():
+    p1 = Product("Товар A", "Описание", 100.0, 10)
+    p2 = Product("Товар B", "Описание", 200.0, 2)
+    assert p1 + p2 == 1400.0
+
+
+def test_product_str():
+    product = Product("Товар", "Описание", 100.0, 10)
+    assert str(product) == "Товар, 100.0 руб. Остаток: 10 шт."
+
+
+def test_category_str():
+    products = [
+        Product("Товар1", "Описание", 100.0, 2),
+        Product("Товар2", "Описание", 200.0, 3)
+    ]
+    category = Category("Категория", "Описание", products)
+    assert str(category) == "Категория, количество продуктов: 5 шт."
