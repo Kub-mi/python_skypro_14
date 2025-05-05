@@ -39,3 +39,78 @@ def test_category_and_product_count(reset_category_counts, sample_products):
 
     assert Category.category_count == 2
     assert Category.product_count == 3  # 2 продукта в первой категории + 1 во второй
+
+
+def test_product_price_setter_positive():
+    product = Product("Товар", "Описание", 100.0, 10)
+    product.price = 120.0
+    assert product.price == 120.0
+
+
+def test_product_price_setter_negative(capfd):
+    product = Product("Товар", "Описание", 100.0, 10)
+    product.price = -50.0
+    out, _ = capfd.readouterr()
+    assert "Цена не должна быть нулевая или отрицательная"
+    assert product.price == 100.0
+
+
+def test_category_add_product(reset_category_counts, sample_products):
+    category = Category("Техника", "Описание", sample_products)
+    new_product = Product("Новый", "Описание", 500.0, 3)
+    category.add_product(new_product)
+    assert "Новый, 500.0 руб. Остаток: 3 шт." in category.products
+
+
+def test_product_classmethod():
+    data = {
+        "name": "Тест",
+        "description": "Тест продукт",
+        "price": 300.0,
+        "quantity": 2
+    }
+    product = Product.new_product(data)
+    assert isinstance(product, Product)
+    assert product.name == "Тест"
+    assert product.price == 300.0
+
+
+def test_new_product_merging_existing():
+    existing = [
+        Product("Товар A", "Описание", 500.0, 3)
+    ]
+
+    data = {
+        "name": "Товар A",
+        "description": "Новое описание",  # не влияет
+        "price": 600.0,  # выше старой
+        "quantity": 2
+    }
+
+    updated_product = Product.new_product_upgrated(data, existing)
+
+    assert updated_product.quantity == 5  # 3 + 2
+    assert updated_product.price == 600.0  # берём максимальную цену
+    assert updated_product is existing[0]  # возвращаем тот же объект
+
+
+def test_price_setter_confirm_lower_price_yes(monkeypatch):
+    product = Product("Товар", "Описание", 1000.0, 1)
+
+    # Подтверждаем снижение (ввод 'y')
+    monkeypatch.setattr("builtins.input", lambda _: "y")
+    product.price = 800.0
+    assert product.price == 800.0
+
+
+def test_price_setter_confirm_lower_price_no(monkeypatch, capfd):
+    product = Product("Товар", "Описание", 1000.0, 1)
+
+    # Отказываемся понижать цену (ввод 'n')
+    monkeypatch.setattr("builtins.input", lambda _: "n")
+    product.price = 800.0
+
+    assert product.price == 1000.0  # цена не изменилась
+
+    out, _ = capfd.readouterr()
+    assert "Цена осталась прежней" in out
