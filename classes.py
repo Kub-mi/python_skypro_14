@@ -8,6 +8,9 @@ class Product:
         self.__price = price  # Цена товара (в рублях, с копейками)
         self.quantity = quantity  # Количество товара в наличии (в штуках)
 
+    def __str__(self):
+        return f"{self.name}, {self.__price} руб. Остаток: {self.quantity} шт.\n"
+
 
     @classmethod
     def new_product(cls, data: dict):
@@ -84,7 +87,10 @@ class Category:
 
     @property
     def products(self):
-        return "".join(
-            f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт.\n"
-            for product in self.__products
-        )
+        return "\n".join(str(product) for product in self.__products)
+
+
+    def __str__(self):
+        total_quantity = sum(product.quantity for product in self.__products)
+        return f"{self.name}, количество продуктов: {total_quantity} шт."
+
