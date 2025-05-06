@@ -1,3 +1,4 @@
+from itertools import product
 from typing import List, Optional
 
 
@@ -123,3 +124,20 @@ class CategoryIterator:
             self._index += 1
             return result
         raise StopIteration
+
+
+class Smartphone(Product):
+    def __init__(self, name: str, description: str, price: float, quantity: int, efficiency: float, model: str, memory: int, color:str):
+        super().__init__(name, description, price, quantity)
+        self.efficiency = efficiency
+        self.model = model
+        self.memory = memory
+        self.color = color
+
+
+class LawnGrass(Product):
+    def __init__(self, name: str, description: str, price: float, quantity: int, country: str, germination_period: str, color:str):
+        super().__init__(name, description, price, quantity)
+        self.country = country
+        self.germination_period = germination_period
+        self.color = color
