@@ -12,7 +12,7 @@ class Product:
         self.quantity = quantity  # Количество товара в наличии (в штуках)
 
     def __str__(self):
-        return f"{self.name}, {self.__price} руб. Остаток: {self.quantity} шт.\n"
+        return f"{self.name}, {self.__price} руб. Остаток: {self.quantity} шт."
 
     def __add__(self, other):
         if not isinstance(other, Product):
@@ -84,22 +84,23 @@ class Category:
     def __init__(self, name: str, description: str, products: List[Product]):
         self.name = name  # Название категории
         self.description = description  # Описание категории
-        self.__products = (
-            products  # Список товаров в категории (объекты класса Product)
-        )
+        self.__products = products  # Список товаров в категории (объекты класса Product)
         Category.category_count += 1
         Category.product_count += len(products)
 
-    def add_product(self, product: Product):
+    def add_product(self, product):
         if not isinstance(product, Product):
-            raise TypeError(
-                "Можно добавлять только экземпляры класса Product или его наследников"
-            )
+            raise TypeError("Можно добавлять только экземпляры класса Product или его подклассов")
         self.__products.append(product)
-        Category.category_count += 1
+        Category.product_count += 1
 
     @property
     def products(self):
+        # return "\n".join(str(product) for product in self.__products)
+        return self.__products
+
+    @property
+    def products_list_str(self):
         return "\n".join(str(product) for product in self.__products)
 
     def __str__(self):

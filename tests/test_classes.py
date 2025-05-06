@@ -1,5 +1,5 @@
 import pytest
-from src.classes import Product, Category
+from src.classes import Product, Category, Smartphone, LawnGrass
 
 
 @pytest.fixture
@@ -59,7 +59,7 @@ def test_category_add_product(reset_category_counts, sample_products):
     category = Category("Техника", "Описание", sample_products)
     new_product = Product("Новый", "Описание", 500.0, 3)
     category.add_product(new_product)
-    assert "Новый, 500.0 руб. Остаток: 3 шт." in category.products
+    assert "Новый, 500.0 руб. Остаток: 3 шт." in category.products_list_str
 
 
 def test_product_classmethod():
@@ -134,3 +134,25 @@ def test_category_str():
     ]
     category = Category("Категория", "Описание", products)
     assert str(category) == "Категория, количество продуктов: 5 шт."
+
+
+def test_add_valid_product():
+    category = Category("Смартфоны", "Категория смартфонов", [])
+    phone = Smartphone("iPhone", "desc", 50000.0, 3, 90.0, "14", 128, "черный")
+    category.add_product(phone)
+    assert "iPhone" in category.products_list_str
+
+
+def test_add_non_product_instance():
+    class NotProduct:
+        pass
+    category = Category("Смартфоны", "Категория смартфонов", [])
+    with pytest.raises(TypeError):
+        category.add_product(NotProduct())
+
+
+def test_add_product_subclass():
+    category = Category("Газоны", "Категория трав", [])
+    grass = LawnGrass("Газон", "desc", 300.0, 10, "RU", "7 дней", "Зеленый")
+    category.add_product(grass)
+    assert "Газон" in category.products_list_str
