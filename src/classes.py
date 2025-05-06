@@ -134,6 +134,11 @@ class Smartphone(Product):
         self.memory = memory
         self.color = color
 
+    def __add__(self, other):
+        if type(self) != type(other):
+            raise TypeError("Нельзя складывать продукты разных типов")
+        return self.price * self.quantity + other.price * other.quantity
+
 
 class LawnGrass(Product):
     def __init__(self, name: str, description: str, price: float, quantity: int, country: str, germination_period: str, color:str):
@@ -141,3 +146,8 @@ class LawnGrass(Product):
         self.country = country
         self.germination_period = germination_period
         self.color = color
+
+    def __add__(self, other):
+        if type(self) != type(other):
+            raise TypeError("Нельзя складывать продукты разных типов")
+        return self.price * self.quantity + other.price * other.quantity

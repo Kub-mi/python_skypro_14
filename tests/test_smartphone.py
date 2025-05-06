@@ -17,3 +17,13 @@ def test_smartphone():
     assert phone.model == "iphone 11"
     assert phone.memory == 256
     assert phone.color == "Черный"
+
+
+def test_add_same_phone_only():
+    grass1 = LawnGrass("Grass A", "desc", 200.0, 5, "RU", "5 дней", "Green")
+    phone1 = Smartphone("Phone A", "desc", 10000.0, 2, 90.0, "A", 64, "Gray")
+    phone2 = Smartphone("Phone B", "desc", 12000.0, 1, 85.0, "B", 128, "Black")
+    assert phone1 + phone2 == 32000.0
+
+    with pytest.raises(TypeError):
+        _ = phone1 + grass1
