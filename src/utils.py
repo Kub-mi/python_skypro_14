@@ -1,6 +1,7 @@
 import json
 from typing import List
-from classes import Product, Category
+
+from src.classes import Category, Product
 
 
 def load_data_from_json(filename: str) -> List[Category]:
@@ -16,14 +17,14 @@ def load_data_from_json(filename: str) -> List[Category]:
                 name=product_data["name"],
                 description=product_data["description"],
                 price=product_data["price"],
-                quantity=product_data["quantity"]
+                quantity=product_data["quantity"],
             )
             products.append(product)
 
         category = Category(
             name=category_data["name"],
             description=category_data["description"],
-            products=products
+            products=products,
         )
         categories.append(category)
 
