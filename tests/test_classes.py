@@ -87,7 +87,7 @@ def test_new_product_merging_existing():
         "quantity": 2
     }
 
-    updated_product = Product.new_product_upgrated(data, existing)
+    updated_product = Product.new_product(data, existing)
 
     assert updated_product.quantity == 5  # 3 + 2
     assert updated_product.price == 600.0  # берём максимальную цену

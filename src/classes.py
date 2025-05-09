@@ -1,15 +1,51 @@
-from itertools import product
+from abc import abstractmethod, ABC
 from typing import List, Optional
 
-
-class Product:
-    """Класс для представления продуктов"""
-
+class BaseProduct(ABC):
+    """Абстрактный базовый класс для всех продуктов."""
     def __init__(self, name: str, description: str, price: float, quantity: int):
+        """Инициализация базового продукта."""
         self.name = name  # Название товара
         self.description = description  # Описание товара
         self.__price = price  # Цена товара (в рублях, с копейками)
         self.quantity = quantity  # Количество товара в наличии (в штуках)
+
+    @property
+    def price(self):
+        """Получение цены."""
+        return self.__price
+
+    @price.setter
+    def price(self, new_price):
+        """Установка новой цены с валидацией."""
+        if new_price <= 0:
+            print("Цена не должна быть нулевая или отрицательная")
+        elif new_price < self.__price:
+            confirm = input(
+                f"Вы действительно хотите понизить цену с {self.__price} до {new_price}? (y/n): "
+            )
+            if confirm.lower() == "y":
+                self.__price = new_price
+            else:
+                print("Цена осталась прежней")
+        else:
+            self.__price = new_price
+
+    @abstractmethod
+    def __str__(self):
+        """Возвращает строковое представление продукта."""
+        pass
+
+    @abstractmethod
+    def __add__(self, other):
+        """Определяет поведение при сложении двух продуктов."""
+        pass
+
+
+class Product(BaseProduct):
+    """Класс для представления продуктов"""
+    def __init__(self, name: str, description: str, price: float, quantity: int):
+        super().__init__(name, description, price, quantity)
 
     def __str__(self):
         return f"{self.name}, {self.__price} руб. Остаток: {self.quantity} шт."
@@ -28,27 +64,27 @@ class Product:
             quantity=data["quantity"],
         )
 
-    @property
-    def price(self):
-        return self.__price
-
-    @price.setter
-    def price(self, new_price):
-        if new_price <= 0:
-            print("Цена не должна быть нулевая или отрицательная")
-        elif new_price < self.__price:
-            confirm = input(
-                f"Вы действительно хотите понизить цену с {self.__price} до {new_price}? (y/n): "
-            )
-            if confirm.lower() == "y":
-                self.__price = new_price
-            else:
-                print("Цена осталась прежней")
-        else:
-            self.__price = new_price
+    # @property
+    # def price(self):
+    #     return self.__price
+    #
+    # @price.setter
+    # def price(self, new_price):
+    #     if new_price <= 0:
+    #         print("Цена не должна быть нулевая или отрицательная")
+    #     elif new_price < self.__price:
+    #         confirm = input(
+    #             f"Вы действительно хотите понизить цену с {self.__price} до {new_price}? (y/n): "
+    #         )
+    #         if confirm.lower() == "y":
+    #             self.__price = new_price
+    #         else:
+    #             print("Цена осталась прежней")
+    #     else:
+    #         self.__price = new_price
 
     @classmethod
-    def new_product_upgrated(
+    def new_product(
         cls, data: dict, existing_products: Optional[List["Product"]] = None
     ):
         existing_products = existing_products or []
@@ -63,16 +99,6 @@ class Product:
                 price=data["price"],
                 quantity=data["quantity"],
             )
-
-    # Варинт с форматом list
-    # @classmethod
-    # def new_product(cls, data: list):
-    #     return cls(
-    #         name=data[0],
-    #         description=data[1],
-    #         price=data[2],
-    #         quantity=data[3],
-    #     )
 
 
 class Category:
@@ -128,6 +154,7 @@ class CategoryIterator:
 
 
 class Smartphone(Product):
+    """Класс смартфона с дополнительными атрибутами."""
     def __init__(self, name: str, description: str, price: float, quantity: int, efficiency: float, model: str, memory: int, color:str):
         super().__init__(name, description, price, quantity)
         self.efficiency = efficiency
@@ -142,6 +169,7 @@ class Smartphone(Product):
 
 
 class LawnGrass(Product):
+    """Класс газонной травы с дополнительными атрибутами."""
     def __init__(self, name: str, description: str, price: float, quantity: int, country: str, germination_period: str, color:str):
         super().__init__(name, description, price, quantity)
         self.country = country
