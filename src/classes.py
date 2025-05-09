@@ -44,7 +44,13 @@ class BaseProduct(ABC):
         pass
 
 
-class Product(BaseProduct):
+class InitPrintMixin:
+    def __init__(self, *args, **kwargs):
+        print(f"Создан объект {self.__class__.__name__} с параметрами: {args}")
+        super().__init__(*args, **kwargs)
+
+
+class Product(InitPrintMixin, BaseProduct):
     """Класс для представления продуктов"""
 
     def __init__(self, name: str, description: str, price: float, quantity: int):
