@@ -1,4 +1,5 @@
 import pytest
+
 from src.classes import LawnGrass, Smartphone
 
 

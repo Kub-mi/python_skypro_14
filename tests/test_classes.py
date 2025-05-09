@@ -1,12 +1,13 @@
 import pytest
-from src.classes import Product, Category, Smartphone, LawnGrass
+
+from src.classes import Category, LawnGrass, Product, Smartphone
 
 
 @pytest.fixture
 def sample_products():
     return [
         Product("Товар 1", "Описание 1", 100.0, 10),
-        Product("Товар 2", "Описание 2", 200.0, 5)
+        Product("Товар 2", "Описание 2", 200.0, 5),
     ]
 
 
@@ -34,8 +35,8 @@ def test_category_initialization(reset_category_counts, sample_products):
 
 def test_category_and_product_count(reset_category_counts, sample_products):
     """Создание двух категорий"""
-    category1 = Category("Категория 1", "Описание 1", sample_products)
-    category2 = Category("Категория 2", "Описание 2", [sample_products[0]])
+    Category("Категория 1", "Описание 1", sample_products)
+    Category("Категория 2", "Описание 2", [sample_products[0]])
 
     assert Category.category_count == 2
     assert Category.product_count == 3  # 2 продукта в первой категории + 1 во второй
@@ -62,32 +63,17 @@ def test_category_add_product(reset_category_counts, sample_products):
     assert "Новый, 500.0 руб. Остаток: 3 шт." in category.products_list_str
 
 
-def test_product_classmethod():
-    data = {
-        "name": "Тест",
-        "description": "Тест продукт",
-        "price": 300.0,
-        "quantity": 2
-    }
-    product = Product.new_product(data)
-    assert isinstance(product, Product)
-    assert product.name == "Тест"
-    assert product.price == 300.0
-
-
 def test_new_product_merging_existing():
-    existing = [
-        Product("Товар A", "Описание", 500.0, 3)
-    ]
+    existing = [Product("Товар A", "Описание", 500.0, 3)]
 
     data = {
         "name": "Товар A",
         "description": "Новое описание",  # не влияет
         "price": 600.0,  # выше старой
-        "quantity": 2
+        "quantity": 2,
     }
 
-    updated_product = Product.new_product_upgrated(data, existing)
+    updated_product = Product.new_product(data, existing)
 
     assert updated_product.quantity == 5  # 3 + 2
     assert updated_product.price == 600.0  # берём максимальную цену
@@ -130,7 +116,7 @@ def test_product_str():
 def test_category_str():
     products = [
         Product("Товар1", "Описание", 100.0, 2),
-        Product("Товар2", "Описание", 200.0, 3)
+        Product("Товар2", "Описание", 200.0, 3),
     ]
     category = Category("Категория", "Описание", products)
     assert str(category) == "Категория, количество продуктов: 5 шт."
@@ -146,6 +132,7 @@ def test_add_valid_product():
 def test_add_non_product_instance():
     class NotProduct:
         pass
+
     category = Category("Смартфоны", "Категория смартфонов", [])
     with pytest.raises(TypeError):
         category.add_product(NotProduct())
