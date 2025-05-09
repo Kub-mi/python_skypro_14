@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from itertools import product
 from typing import List, Optional
 
 
@@ -82,62 +83,6 @@ class Product(InitPrintMixin, BaseProduct):
             )
 
 
-class Category:
-    """Класс для представления категорию"""
-
-    category_count = 0  # Статическая переменная для подсчета категорий
-    product_count = 0
-
-    def __init__(self, name: str, description: str, products: List[Product]):
-        self.name = name  # Название категории
-        self.description = description  # Описание категории
-        self.__products = (
-            products  # Список товаров в категории (объекты класса Product)
-        )
-        Category.category_count += 1
-        Category.product_count += len(products)
-
-    def add_product(self, product):
-        if not isinstance(product, Product):
-            raise TypeError(
-                "Можно добавлять только экземпляры класса Product или его подклассов"
-            )
-        self.__products.append(product)
-        Category.product_count += 1
-
-    @property
-    def products(self):
-        # return "\n".join(str(product) for product in self.__products)
-        return self.__products
-
-    @property
-    def products_list_str(self):
-        return "\n".join(str(product) for product in self.__products)
-
-    def __str__(self):
-        total_quantity = sum(product.quantity for product in self.__products)
-        return f"{self.name}, количество продуктов: {total_quantity} шт."
-
-    def __iter__(self):
-        return CategoryIterator(self)
-
-
-class CategoryIterator:
-    def __init__(self, category):
-        self._products = category._Category__products
-        self._index = 0
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        if self._index < len(self._products):
-            result = self._products[self._index]
-            self._index += 1
-            return result
-        raise StopIteration
-
-
 class Smartphone(Product):
     """Класс смартфона с дополнительными атрибутами."""
 
@@ -186,3 +131,75 @@ class LawnGrass(Product):
         if type(self) != type(other):
             raise TypeError("Нельзя складывать продукты разных типов")
         return self.price * self.quantity + other.price * other.quantity
+
+
+class BaseEntity(ABC):
+    def __init__(self, name: str, description: str):
+        self.name = name
+        self.description = description
+
+
+class Category(BaseEntity):
+    """Класс для представления категорию"""
+
+    category_count = 0  # Статическая переменная для подсчета категорий
+    product_count = 0
+
+    def __init__(self, name: str, description: str, products: List[Product]):
+        super().__init__(name, description)
+        self.__products = products  # Список товаров в категории (объекты класса Product)
+        Category.category_count += 1
+        Category.product_count += len(products)
+
+    def add_product(self, product):
+        if not isinstance(product, Product):
+            raise TypeError(
+                "Можно добавлять только экземпляры класса Product или его подклассов"
+            )
+        self.__products.append(product)
+        Category.product_count += 1
+
+    @property
+    def products(self):
+        # return "\n".join(str(product) for product in self.__products)
+        return self.__products
+
+    @property
+    def products_list_str(self):
+        return "\n".join(str(product) for product in self.__products)
+
+    def __str__(self):
+        total_quantity = sum(product.quantity for product in self.__products)
+        return f"{self.name}, количество продуктов: {total_quantity} шт."
+
+    def __iter__(self):
+        return CategoryIterator(self)
+
+
+class CategoryIterator:
+    def __init__(self, category):
+        self._products = category._Category__products
+        self._index = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self._index < len(self._products):
+            result = self._products[self._index]
+            self._index += 1
+            return result
+        raise StopIteration
+
+
+class Order(BaseEntity):
+    def __init__(self, name: str, description: str, product: Product, quantity: int):
+        super().__init__(name, description)
+        self.product = product
+        self.quantity = quantity
+        self.total_price = self.product.price * self.quantity
+
+    def __str__(self):
+        return (f'Заказ: {self.name} - {self.description}'
+                f'Товар: {self.product.name}, Кол-во: {self.quantity}'
+                f'Итоговая цена: {self.total_price} руб.')
