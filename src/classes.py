@@ -1,8 +1,10 @@
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 from typing import List, Optional
+
 
 class BaseProduct(ABC):
     """Абстрактный базовый класс для всех продуктов."""
+
     def __init__(self, name: str, description: str, price: float, quantity: int):
         """Инициализация базового продукта."""
         self.name = name  # Название товара
@@ -44,44 +46,17 @@ class BaseProduct(ABC):
 
 class Product(BaseProduct):
     """Класс для представления продуктов"""
+
     def __init__(self, name: str, description: str, price: float, quantity: int):
         super().__init__(name, description, price, quantity)
 
     def __str__(self):
-        return f"{self.name}, {self.__price} руб. Остаток: {self.quantity} шт."
+        return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
 
     def __add__(self, other):
         if not isinstance(other, Product):
             raise TypeError("Складывать можно только с другим продуктом")
-        return self.__price * self.quantity + other.__price * other.quantity
-
-    @classmethod
-    def new_product(cls, data: dict):
-        return cls(
-            name=data["name"],
-            description=data["description"],
-            price=data["price"],
-            quantity=data["quantity"],
-        )
-
-    # @property
-    # def price(self):
-    #     return self.__price
-    #
-    # @price.setter
-    # def price(self, new_price):
-    #     if new_price <= 0:
-    #         print("Цена не должна быть нулевая или отрицательная")
-    #     elif new_price < self.__price:
-    #         confirm = input(
-    #             f"Вы действительно хотите понизить цену с {self.__price} до {new_price}? (y/n): "
-    #         )
-    #         if confirm.lower() == "y":
-    #             self.__price = new_price
-    #         else:
-    #             print("Цена осталась прежней")
-    #     else:
-    #         self.__price = new_price
+        return self.price * self.quantity + other.price * other.quantity
 
     @classmethod
     def new_product(
@@ -91,7 +66,7 @@ class Product(BaseProduct):
         for product in existing_products:
             if product.name == data["name"]:
                 product.quantity += data["quantity"]
-                product.__price = max(product.price, data["price"])
+                product.price = max(product.price, data["price"])
                 return product
             return cls(
                 name=data["name"],
@@ -110,13 +85,17 @@ class Category:
     def __init__(self, name: str, description: str, products: List[Product]):
         self.name = name  # Название категории
         self.description = description  # Описание категории
-        self.__products = products  # Список товаров в категории (объекты класса Product)
+        self.__products = (
+            products  # Список товаров в категории (объекты класса Product)
+        )
         Category.category_count += 1
         Category.product_count += len(products)
 
     def add_product(self, product):
         if not isinstance(product, Product):
-            raise TypeError("Можно добавлять только экземпляры класса Product или его подклассов")
+            raise TypeError(
+                "Можно добавлять только экземпляры класса Product или его подклассов"
+            )
         self.__products.append(product)
         Category.product_count += 1
 
@@ -155,7 +134,18 @@ class CategoryIterator:
 
 class Smartphone(Product):
     """Класс смартфона с дополнительными атрибутами."""
-    def __init__(self, name: str, description: str, price: float, quantity: int, efficiency: float, model: str, memory: int, color:str):
+
+    def __init__(
+        self,
+        name: str,
+        description: str,
+        price: float,
+        quantity: int,
+        efficiency: float,
+        model: str,
+        memory: int,
+        color: str,
+    ):
         super().__init__(name, description, price, quantity)
         self.efficiency = efficiency
         self.model = model
@@ -170,7 +160,17 @@ class Smartphone(Product):
 
 class LawnGrass(Product):
     """Класс газонной травы с дополнительными атрибутами."""
-    def __init__(self, name: str, description: str, price: float, quantity: int, country: str, germination_period: str, color:str):
+
+    def __init__(
+        self,
+        name: str,
+        description: str,
+        price: float,
+        quantity: int,
+        country: str,
+        germination_period: str,
+        color: str,
+    ):
         super().__init__(name, description, price, quantity)
         self.country = country
         self.germination_period = germination_period

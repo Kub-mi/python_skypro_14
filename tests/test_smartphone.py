@@ -1,5 +1,6 @@
 import pytest
-from src.classes import Smartphone, LawnGrass
+
+from src.classes import LawnGrass, Smartphone
 
 
 @pytest.fixture
@@ -8,7 +9,9 @@ def init_sp():
 
 
 def test_smartphone():
-    phone = Smartphone("Товар 1", "Описание 1", 100.0, 10, 95.5, "iphone 11", 256, "Черный")
+    phone = Smartphone(
+        "Товар 1", "Описание 1", 100.0, 10, 95.5, "iphone 11", 256, "Черный"
+    )
     assert phone.name == "Товар 1"
     assert phone.description == "Описание 1"
     assert phone.price == 100.0
