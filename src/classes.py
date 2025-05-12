@@ -45,13 +45,18 @@ class BaseProduct(ABC):
         pass
 
 
-class InitPrintMixin:
+class PrintMixin:
     def __init__(self, *args, **kwargs):
-        print(f"Создан объект {self.__class__.__name__} с параметрами: {args}")
         super().__init__(*args, **kwargs)
+        print(repr(self))
 
 
-class Product(InitPrintMixin, BaseProduct):
+    def __repr__(self):
+        attrs = ', '.join(f'{k}={v}' for k, v in self.__dict__.items())
+        return f"{self.__class__.__name__}({attrs})"
+
+
+class Product(PrintMixin, BaseProduct):
     """Класс для представления продуктов"""
 
     def __init__(self, name: str, description: str, price: float, quantity: int):
@@ -66,21 +71,14 @@ class Product(InitPrintMixin, BaseProduct):
         return self.price * self.quantity + other.price * other.quantity
 
     @classmethod
-    def new_product(
-        cls, data: dict, existing_products: Optional[List["Product"]] = None
-    ):
+    def new_product(cls, data: dict, existing_products: Optional[List["Product"]] = None):
         existing_products = existing_products or []
         for product in existing_products:
             if product.name == data["name"]:
                 product.quantity += data["quantity"]
                 product.price = max(product.price, data["price"])
                 return product
-            return cls(
-                name=data["name"],
-                description=data["description"],
-                price=data["price"],
-                quantity=data["quantity"],
-            )
+        return cls(**data)
 
 
 class Smartphone(Product):
@@ -104,8 +102,8 @@ class Smartphone(Product):
         self.color = color
 
     def __add__(self, other):
-        if type(self) != type(other):
-            raise TypeError("Нельзя складывать продукты разных типов")
+        if not isinstance(other, Smartphone):
+            raise TypeError("Можно складывать только объекты Smartphone")
         return self.price * self.quantity + other.price * other.quantity
 
 
@@ -128,8 +126,8 @@ class LawnGrass(Product):
         self.color = color
 
     def __add__(self, other):
-        if type(self) != type(other):
-            raise TypeError("Нельзя складывать продукты разных типов")
+        if not isinstance(other, LawnGrass):
+            raise TypeError("Можно складывать только объекты LawnGrass")
         return self.price * self.quantity + other.price * other.quantity
 
 
@@ -145,11 +143,11 @@ class Category(BaseEntity):
     category_count = 0  # Статическая переменная для подсчета категорий
     product_count = 0
 
-    def __init__(self, name: str, description: str, products: List[Product]):
+    def __init__(self, name: str, description: str, products: List[Product] = None):
         super().__init__(name, description)
-        self.__products = products  # Список товаров в категории (объекты класса Product)
+        self.__products = products or []  # Делаем параметр необязательным
         Category.category_count += 1
-        Category.product_count += len(products)
+        Category.product_count += len(self.__products)
 
     def add_product(self, product):
         if not isinstance(product, Product):
