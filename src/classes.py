@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from itertools import product
 from typing import List, Optional
 
 
@@ -12,6 +11,8 @@ class BaseProduct(ABC):
         self.description = description  # Описание товара
         self.__price = price  # Цена товара (в рублях, с копейками)
         self.quantity = quantity  # Количество товара в наличии (в штуках)
+        if self.quantity == 0:
+            raise ValueError("Товар с нулевым количеством не может быть добавлен")
 
     @property
     def price(self):
@@ -50,9 +51,8 @@ class PrintMixin:
         super().__init__(*args, **kwargs)
         print(repr(self))
 
-
     def __repr__(self):
-        attrs = ', '.join(f'{k}={v}' for k, v in self.__dict__.items())
+        attrs = ", ".join(f"{k}={v}" for k, v in self.__dict__.items())
         return f"{self.__class__.__name__}({attrs})"
 
 
@@ -71,7 +71,9 @@ class Product(PrintMixin, BaseProduct):
         return self.price * self.quantity + other.price * other.quantity
 
     @classmethod
-    def new_product(cls, data: dict, existing_products: Optional[List["Product"]] = None):
+    def new_product(
+        cls, data: dict, existing_products: Optional[List["Product"]] = None
+    ):
         existing_products = existing_products or []
         for product in existing_products:
             if product.name == data["name"]:
@@ -143,7 +145,7 @@ class Category(BaseEntity):
     category_count = 0  # Статическая переменная для подсчета категорий
     product_count = 0
 
-    def __init__(self, name: str, description: str, products: List[Product] = None):
+    def __init__(self, name, description, products = None):
         super().__init__(name, description)
         self.__products = products or []  # Делаем параметр необязательным
         Category.category_count += 1
@@ -173,6 +175,14 @@ class Category(BaseEntity):
     def __iter__(self):
         return CategoryIterator(self)
 
+    def middle_price(self):
+        try:
+            total = sum(product.price for product in self.__products)
+            return total / len(self.__products)
+
+        except ZeroDivisionError:
+            return 0
+
 
 class CategoryIterator:
     def __init__(self, category):
@@ -198,6 +208,8 @@ class Order(BaseEntity):
         self.total_price = self.product.price * self.quantity
 
     def __str__(self):
-        return (f'Заказ: {self.name} - {self.description}'
-                f'Товар: {self.product.name}, Кол-во: {self.quantity}'
-                f'Итоговая цена: {self.total_price} руб.')
+        return (
+            f"Заказ: {self.name} - {self.description}"
+            f"Товар: {self.product.name}, Кол-во: {self.quantity}"
+            f"Итоговая цена: {self.total_price} руб."
+        )
