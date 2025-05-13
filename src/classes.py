@@ -12,6 +12,8 @@ class BaseProduct(ABC):
         self.description = description  # Описание товара
         self.__price = price  # Цена товара (в рублях, с копейками)
         self.quantity = quantity  # Количество товара в наличии (в штуках)
+        if self.quantity == 0:
+            raise ValueError('Товар с нулевым количеством не может быть добавлен')
 
     @property
     def price(self):
