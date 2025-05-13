@@ -175,6 +175,15 @@ class Category(BaseEntity):
     def __iter__(self):
         return CategoryIterator(self)
 
+    def middle_price(self):
+        try:
+            total = sum(product.price for product in self.__products)
+            return total / len(self.__products)
+
+        except ZeroDivisionError as e:
+            return 'Нельзя делить на ноль, проверьте список товаров'
+
+
 
 class CategoryIterator:
     def __init__(self, category):

@@ -148,3 +148,13 @@ def test_add_product_subclass():
 def test_product_quantity():
     with pytest.raises(ValueError, match='Товар с нулевым количеством не может быть добавлен'):
         Product("Товар 1", "Описание 1", 100.0, 0)
+
+
+def test_category_middle_price_except():
+    category = Category("Тестовая категория", "Описание", [])
+    assert category.middle_price() == 'Нельзя делить на ноль, проверьте список товаров'
+
+
+def test_category_middle_price(sample_products):
+    category = Category("Тестовая категория", "Описание", sample_products)
+    assert category.middle_price() == 150.0
