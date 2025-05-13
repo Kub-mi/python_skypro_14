@@ -181,7 +181,7 @@ class Category(BaseEntity):
             return total / len(self.__products)
 
         except ZeroDivisionError:
-            return "Нельзя делить на ноль, проверьте список товаров"
+            return 0
 
 
 class CategoryIterator:

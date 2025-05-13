@@ -154,7 +154,7 @@ def test_product_quantity():
 
 def test_category_middle_price_except():
     category = Category("Тестовая категория", "Описание", [])
-    assert category.middle_price() == "Нельзя делить на ноль, проверьте список товаров"
+    assert category.middle_price() == 0
 
 
 def test_category_middle_price(sample_products):
